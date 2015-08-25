@@ -29,13 +29,22 @@ X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = .4)
 
 # In[290]:
 
-def convert_time(x):
+def convert_time(raw_datetime):
+    """
+    Classifies time when crime occured into groups.
+    
+    Args:
+        raw_datetime (str): datetime
+        
+    Returns:
+        int: a value which corresponds to a time range 
+    """
     hour = strptime(x, "%Y-%m-%d %H:%M:%S").tm_hour
-    if hour >= 21 or hour <= 6:
+    if hour >= 21 or hour <= 6: #9pm - 6am
         return 0
-    elif hour <= 12 and hour > 7:
+    elif hour <= 12 and hour > 6: #6am - 12pm 
         return 1
-    elif hour < 17 and hour > 12:
+    elif hour < 17 and hour > 12: #12pm - 5pm
         return 2
     else:
         return 3
@@ -44,7 +53,16 @@ def convert_time(x):
 
 # In[267]:
 
-def convert_month(x):
+def convert_month(raw_datetime):
+    """
+    Converts datetimes into months.
+    
+    Args:
+        raw_datetime (str): datetime
+        
+    Returns:
+        int: a month 
+    """    
     month = strptime(x, "%Y-%m-%d %H:%M:%S").tm_mon
 #    if month >= 1 and month <= 3:
 #        return 0
@@ -75,6 +93,7 @@ df['Hours'] = pd.DataFrame(df.Dates).applymap(convert_time)
 # In[271]:
 
 def convertDow(x):
+    #clustering similar days with one another 
     days = {'Monday' : 1, 'Tuesday': 1, 'Wednesday': 1, 'Thursday': 1, 'Friday': 0, 'Saturday': 1, 'Sunday': 2}
     return days[x]
 
@@ -202,7 +221,7 @@ dfty = pd.DataFrame(y_test).applymap(convert)
 def logmap(x):
     #return logistic_model.predict_proba(x)
     return bayes_model.predict_proba(x)
-#    return sgd_model.predict_proba(x)
+    #return sgd_model.predict_proba(x)
     #return rf_model.predict_proba(x)
     #return grid_search_model.predict_proba(x)
 
@@ -229,7 +248,7 @@ print "%.6f" % log_loss(dfty,estimates)
 #3 bayes with (hours,district): :2.679
 
 
-# #Testing
+# #Test
 
 # In[366]:
 
@@ -272,15 +291,12 @@ dfest.columns = ['Id','ARSON','ASSAULT','BAD CHECKS','BRIBERY','BURGLARY','DISOR
              'OTHER OFFENSES','PORNOGRAPHY/OBSCENE MAT','PROSTITUTION','RECOVERED VEHICLE','ROBBERY','RUNAWAY','SECONDARY CODES',
              'SEX OFFENSES FORCIBLE','SEX OFFENSES NON FORCIBLE','STOLEN PROPERTY','SUICIDE','SUSPICIOUS OCC','TREA','TRESPASS',
              'VANDALISM','VEHICLE THEFT','WARRANTS','WEAPON LAWS']
+
 dfest.to_csv('results5.csv', index = False, columns=['Id','ARSON','ASSAULT','BAD CHECKS','BRIBERY','BURGLARY','DISORDERLY CONDUCT','DRIVING UNDER THE INFLUENCE',
              'DRUG/NARCOTIC','DRUNKENNESS','EMBEZZLEMENT','EXTORTION','FAMILY OFFENSES','FORGERY/COUNTERFEITING',
              'FRAUD','GAMBLING','KIDNAPPING','LARCENY/THEFT','LIQUOR LAWS','LOITERING','MISSING PERSON','NON-CRIMINAL',
              'OTHER OFFENSES','PORNOGRAPHY/OBSCENE MAT','PROSTITUTION','RECOVERED VEHICLE','ROBBERY','RUNAWAY','SECONDARY CODES',
              'SEX OFFENSES FORCIBLE','SEX OFFENSES NON FORCIBLE','STOLEN PROPERTY','SUICIDE','SUSPICIOUS OCC','TREA','TRESPASS',
              'VANDALISM','VEHICLE THEFT','WARRANTS','WEAPON LAWS'])
-
-
-# In[ ]:
-
-
+#printing out predictions in csv format for submission to Kaggle competition
 
